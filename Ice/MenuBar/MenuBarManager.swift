@@ -110,7 +110,9 @@ final class MenuBarManager: ObservableObject {
                     else {
                         return
                     }
-                    isMenuBarHiddenBySystemUserDefaults = isMenuBarHidden
+                    // PATCHED: treat the system-auto-hidden menu bar as normal,
+                    // so Ice keeps managing items instead of giving up.
+                    isMenuBarHiddenBySystemUserDefaults = false
                 }
                 .store(in: &c)
         }
@@ -122,6 +124,8 @@ final class MenuBarManager: ObservableObject {
                 if
                     let self,
                     let appState,
+                    // PATCHED: respect the "Automatically rehide" toggle.
+                    appState.settingsManager.generalSettingsManager.autoRehide,
                     case .focusedApp = appState.settingsManager.generalSettingsManager.rehideStrategy,
                     let hiddenSection = section(withName: .hidden),
                     !appState.eventManager.isMouseInsideMenuBar
